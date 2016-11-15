@@ -47,12 +47,26 @@ def show_suites():
     suites = cur.fetchall()
     return render_template('show_suites.html', suites=suites)
 
+@app.route('/runs')
+def show_runs():
+    db = get_db()
+    cur = db.execute('select id, title, created from test_runs order by id desc')
+    runs = cur.fetchall()
+    return render_template('show_runs.html', runs=runs)
+
 @app.route('/suite/<int:ts_id>')
 def show_cases(ts_id):
     db = get_db()
     cur = db.execute('select id, title from test_cases where ts_id = ?', [ts_id])
     cases = cur.fetchall()
     return render_template('show_cases.html', cases=cases, ts_id=ts_id)
+
+@app.route('/run/<int:run_id>')
+def show_run(run_id):
+    db = get_db()
+    cur = db.execute('select e.id, c.title, e.status, e.updated from test_cases c join test_executions e on c.id = e.tc_id where e.tr_id = ?', [run_id])
+    executions = cur.fetchall()
+    return render_template('show_run.html', executions=executions)
 
 @app.route('/add', methods=['POST'])
 def add_suite():
@@ -76,6 +90,22 @@ def add_case():
     flash('New entry was succesfully posted')
     return redirect(url_for('show_cases', ts_id=request.form['ts_id']))
 
+@app.route('/add_run/<int:ts_id>', methods=['POST'])
+def add_run(ts_id):
+    if not session.get('logged_in'):
+        abort(401)
+    db = get_db()
+    cur = db.execute('insert into test_runs (title) values (?)', [request.form['title']])
+    db.commit()
+    tr_id = cur.lastrowid
+    cur = db.execute('select id from test_cases where ts_id = ?', [ts_id])
+    case_ids = cur.fetchall()
+    for tc_id in case_ids:
+        db.execute('insert into test_executions (tc_id,tr_id,status) values (?,?,?)', 
+    [tc_id[0], tr_id, 'UNEXECUTED'])
+    db.commit()
+    flash('New entry was succesfully posted')
+    return redirect(url_for('show_runs'))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -88,14 +118,14 @@ def login():
         else:
             session['logged_in'] = True
     	    flash('You were logged in')
-            return redirect(url_for('show_entries'))
+            return redirect(url_for('show_suites'))
     return render_template('login.html', error=error)
 
 @app.route('/logout')
 def logout():
     session.pop('logged_in', None)
     flash('You were logged out')
-    return redirect(url_for('show_entries'))
+    return redirect(url_for('show_suites'))
 
 @app.route('/delete', methods=['POST'])
 def delete_suite():
@@ -116,3 +146,13 @@ def delete_case():
     db.commit()
     flash('Test case deleted')
     return redirect(url_for('show_cases', ts_id=request.form['ts_id']))
+
+@app.route('/delete_run', methods=['POST'])
+def delete_run():
+    if not session.get('logged_in'):
+        abort(401)
+    db = get_db()
+    db.execute('delete from test_runs where id = ?', [request.form['run_id']])
+    db.commit()
+    flash('Test run deleted')
+    return redirect(url_for('show_runs'))

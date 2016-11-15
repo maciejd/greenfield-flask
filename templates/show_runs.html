@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% block body %}
+  <ul class=entries>
+    {% for run in runs %}
+      <li><h2><a href={{url_for('show_run', run_id=run.id)}}>{{ run.title }}</a></h2></li>
+      <li><h4>Created: {{ run.created }}</hr></li>
+{% if session.logged_in %}
+<form action="{{ url_for('delete_run') }}" method=post>
+<input type=hidden value="{{ run.id }}" name="run_id"></input>
+<input type=submit value="x"></input>
+</form>
+{% endif %}
+  {% else %}
+    <li><em>Unbelievable.  No test runs here so far</em>
+  {% endfor %}
+  </ul>
+{% endblock %}

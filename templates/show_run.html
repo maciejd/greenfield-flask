@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+{% block body %}
+  <ul class=entries>
+  {% for e in executions %}
+    <li><h2>{{ e.title }}</h2></li>
+    <li><h4>{{ e.status }}</h4></li>
+  {% else %}
+    <li><em>Unbelievable.  No test cases in this run</em>
+  {% endfor %}
+  </ul>
+{% endblock %}
