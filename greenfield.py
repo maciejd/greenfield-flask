@@ -41,22 +41,41 @@ def initb_command():
     print 'Initialized the database.'
 
 @app.route('/')
-def show_entries():
+def show_suites():
     db = get_db()
-    cur = db.execute('select id, title, text from test_cases order by id desc')
-    entries = cur.fetchall()
-    return render_template('show_entries.html', entries=entries)
+    cur = db.execute('select id, title from test_suites order by id desc')
+    suites = cur.fetchall()
+    return render_template('show_suites.html', suites=suites)
+
+@app.route('/suite/<int:ts_id>')
+def show_cases(ts_id):
+    db = get_db()
+    cur = db.execute('select id, title from test_cases where ts_id = ?', [ts_id])
+    cases = cur.fetchall()
+    return render_template('show_cases.html', cases=cases, ts_id=ts_id)
 
 @app.route('/add', methods=['POST'])
-def add_entry():
+def add_suite():
     if not session.get('logged_in'):
         abort(401)
     db = get_db()
-    db.execute('insert into test_cases (title, text) values (?,?)', 
-    [request.form['title'], request.form['text']])
+    db.execute('insert into test_suites (title) values (?)', 
+    [request.form['title']])
     db.commit()
     flash('New entry was succesfully posted')
-    return redirect(url_for('show_entries'))
+    return redirect(url_for('show_suites'))
+
+@app.route('/add_case', methods=['POST'])
+def add_case():
+    if not session.get('logged_in'):
+        abort(401)
+    db = get_db()
+    db.execute('insert into test_cases (title,ts_id) values (?,?)', 
+    [request.form['title'], request.form['ts_id']])
+    db.commit()
+    flash('New entry was succesfully posted')
+    return redirect(url_for('show_cases', ts_id=request.form['ts_id']))
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -79,11 +98,21 @@ def logout():
     return redirect(url_for('show_entries'))
 
 @app.route('/delete', methods=['POST'])
-def delete_entry():
+def delete_suite():
+    if not session.get('logged_in'):
+        abort(401)
+    db = get_db()
+    db.execute('delete from test_suites where id = ?', [request.form['ts_id']])
+    db.commit()
+    flash('Test suite deleted')
+    return redirect(url_for('show_suites'))
+
+@app.route('/delete_case', methods=['POST'])
+def delete_case():
     if not session.get('logged_in'):
         abort(401)
     db = get_db()
     db.execute('delete from test_cases where id = ?', [request.form['tc_id']])
     db.commit()
     flash('Test case deleted')
-    return redirect(url_for('show_entries'))
+    return redirect(url_for('show_cases', ts_id=request.form['ts_id']))

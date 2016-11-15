@@ -1,19 +1,17 @@
 {% extends "layout.html" %}
 {% block body %}
   {% if session.logged_in %}
-    <form action="{{ url_for('add_entry') }}" method=post class=add-entry>
+    <form action="{{ url_for('add_suite') }}" method=post class=add-entry>
       <dl>
-        <dt>Test Case Title:
+        <dt>Test Suite Title:
         <dd><input type=text size=30 name=title>
-        <dt>Test Case Body:
-        <dd><textarea name=text rows=5 cols=40></textarea>
-        <dd><input type=submit value=Share>
+        <dd><input type=submit value="Add Suite">
       </dl>
     </form>
   {% endif %}
   <ul class=entries>
-  {% for entry in entries %}
-    <li><h2>{{ entry.title }}</h2>{{ entry.text|safe }}
+  {% for suite in suites %}
+    <li><h2><a href={{url_for('show_cases', ts_id=suite.id)}}>{{ suite.title }}</a></h2></li>
 {% if session.logged_in %}
 <form action="{{ url_for('delete_suite') }}" method=post>
 <input type=hidden value="{{ suite.id }}" name="ts_id"></input>
@@ -21,7 +19,7 @@
 </form>
 {% endif %}
   {% else %}
-    <li><em>Unbelievable.  No test cases here so far</em>
+    <li><em>Unbelievable.  No test suites here so far</em>
   {% endfor %}
   </ul>
 {% endblock %}
