@@ -1,12 +1,16 @@
 # greenfield-flask
 Dockerized test management tool using Flask, SQLAlchemy, Jinja2 and Bootstrap
 
-Clone repo `git clone https://github.com/maciejd/greenfield-flask.git`
+1. Clone repo `git clone https://github.com/maciejd/greenfield-flask.git`
 
-Chande directory `cd greenfield-flask`
+2. Chande directory `cd greenfield-flask`
 
-Build image `docker build -t greenfield .` 
+3. Build image `docker build -t greenfield .` 
   
-Run container in detached mode and publish port 5000 `docker run -d -p 5000:5000 greenfield`
+4. Run container in detached mode and publish port 5000 `docker run -d -p 5000:5000 greenfield`
   
-App should be accessible on port 5000 `http://localhost:5000`
+5. App should be accessible on port 5000 `http://localhost:5000`
+
+Admin credentials: admin/admin
+
+
