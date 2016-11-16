@@ -4,6 +4,17 @@
     {% for run in runs %}
       <li><h2><a href={{url_for('show_run', run_id=run.id)}}>{{ run.title }}</a></h2></li>
       <li><h4>Created: {{ run.created }}</hr></li>
+      <div class="progress">
+        <div class="progress-bar progress-bar-success" style="width:{{ get_results(run.id)['PASSED'] }}%">
+          <span class="sr-only"></span>
+        </div>
+        <div class="progress-bar progress-bar-info" style="width:{{ get_results(run.id)['BLOCKED'] }}%">
+          <span class="sr-only"></span>
+        </div>        
+        <div class="progress-bar progress-bar-danger" style="width:{{ get_results(run.id)['FAILED'] }}%">
+          <span class="sr-only"></span>
+      </div>
+    </div>
 {% if session.logged_in %}
 <form action="{{ url_for('delete_run') }}" method=post>
 <input type=hidden value="{{ run.id }}" name="run_id"></input>

@@ -10,6 +10,8 @@
     </form>
   </div>
 </div>
-  {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
+{% if error %}
+  <div class="alert alert-danger" role="alert">{{ error }}<div>
+{% endif %}
  
 {% endblock %}

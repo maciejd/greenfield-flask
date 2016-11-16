@@ -52,7 +52,7 @@ def show_runs():
     db = get_db()
     cur = db.execute('select id, title, created from test_runs order by id desc')
     runs = cur.fetchall()
-    return render_template('show_runs.html', runs=runs)
+    return render_template('show_runs.html', runs=runs, get_results=get_results)
 
 @app.route('/suite/<int:ts_id>')
 def show_cases(ts_id):
@@ -167,3 +167,15 @@ def update_result():
     db.commit()
     return redirect(url_for('show_run', run_id=request.form['run_id']))
   
+
+def get_results(tr_id):
+    db = get_db()
+    cur = db.execute('select status, count(*) as result_count from test_executions where tr_id = ? group by status', [tr_id])
+    results = cur.fetchall()
+    total = 0
+    for result in results:
+        total+=result['result_count']
+    d={}
+    for result in results:
+        d[result['status']]=round(result['result_count']/float(total)*100, 0)
+    return d
