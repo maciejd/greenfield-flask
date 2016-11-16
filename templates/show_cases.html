@@ -1,27 +1,48 @@
 {% extends "layout.html" %}
 {% block body %}
-  {% if session.logged_in %}
-    <form action="{{ url_for('add_case') }}" method=post class=add-entry>
-      <dl>
-        <dt>Test Case Title:
-        <dd><input type=text size=30 name="title">
-        <dd><input type=hidden value="{{ ts_id }}" name="ts_id"></input>
-        <dd><input type=submit value="Add Case">
-      </dl>
-    </form>
-  {% endif %}
-  <ul class=entries>
-  {% for case in cases %}
-    <li><h2>{{ case.title }}</h2></li>
-{% if session.logged_in %}
-<form action="{{ url_for('delete_case') }}" method=post>
-<input type=hidden value="{{ case.id }}" name="tc_id"></input>
-<input type=hidden value="{{ ts_id }}" name="ts_id"></input>       
-<input type=submit value="x"></input>
-</form>
-{% endif %}
-  {% else %}
-    <li><em>Unbelievable.  No test cases here so far</em>
+<div class="container">
+  <div class="row>
+     <div class="col-md-10">
+       <table class="table">
+         <tr>
+           <th>Test Case</th>
+           {% if session.logged_in %}
+           <th>Delete</th>
+		   {% endif %}
+         </tr>
+         {% for case in cases %}
+         <tr>
+          <td>{{case.title}}</td>
+          {% if session.logged_in %}
+          <td>
+            <form action="{{ url_for('delete_case') }}" method=post>
+			<input type=hidden value="{{ case.id }}" name="tc_id"></input>
+			<input type=hidden value="{{ case.suite.id }}" name="ts_id"></input>
+			<button type=submit class="btn btn-danger">Delete</button>
+            </form>
+          </td>
+         </tr>
+         {% endif %}
+      {% else %}
+      </table>
+    <div class="alert alert-info" role="alert">Unbelievable.  No test cases here so far</div>
   {% endfor %}
-  </ul>
+      </table>
+    </div>
+     {% if session.logged_in %}
+    <br />     
+ <form action="{{ url_for('add_case') }}"  method=post class="form-inline">
+<div class="form-group col-lg-6">
+      <div class="input-group">
+             <input type="text" class="form-control" name="title" placeholder="Test case title">
+             <span class="input-group-btn">
+               <button type="submit" class="btn btn-secondary">Add</button>
+             </span>
+             <input type=hidden value="{{ ts_id }}" name="ts_id"></input> 
+       </div>
+     </div>
+</div>
+    {% endif %}
+  </div>
+</div>
 {% endblock %}
