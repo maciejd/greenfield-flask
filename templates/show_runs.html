@@ -4,13 +4,13 @@
   <div class"="row">
     <div class="col-md-10">
       <table class="table">
-      {% for run in runs %}
          <tr>
            <th>Run name</th>
            <th>Created date</th>
            <th>Summary</th>
            <th>Delete run</th>
          </tr>
+         {% for run in runs %}
          <tr>
           <td><a href={{url_for('show_run', run_id=run.id)}}>{{ run.title }}</a></td>
           <td>{{ run.created }}</td>
@@ -34,11 +34,12 @@
 <button type="submit" class="btn btn-danger">Delete</button>
 </form>
 </td>
+</tr>
 {% endif %}
-</table>
   {% else %}
    Unbelievable.  No test runs here so far
   {% endfor %}
+</table>
 </div>
 </div>
 </div>

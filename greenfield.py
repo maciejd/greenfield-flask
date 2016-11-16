@@ -74,11 +74,12 @@ def add_suite():
     if not session.get('logged_in'):
         abort(401)
     db = get_db()
-    db.execute('insert into test_suites (title) values (?)', 
+    cur = db.execute('insert into test_suites (title) values (?)', 
     [request.form['title']])
     db.commit()
+    ts_id = cur.lastrowid
     flash('New entry was succesfully posted')
-    return redirect(url_for('show_suites'))
+    return redirect(url_for('show_cases', ts_id=ts_id))
 
 @app.route('/add_case', methods=['POST'])
 def add_case():
