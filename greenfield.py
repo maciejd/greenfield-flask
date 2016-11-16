@@ -62,17 +62,21 @@ def add_case():
 def add_run(ts_id):
     if not session.get('logged_in'):
         abort(401)
-    run = TestRun(request.form['title'])
-    db_session.add(run)
-    db_session.commit()
-    run_id = run.id
     cases = TestSuite.query.filter(TestSuite.id == ts_id).first().cases.all()
-    for case in cases:
-        e = TestExecution('UNEXECUTED', case, run)
-        db_session.add(e)
+    if len(cases) == 0:
+        flash('Add test case before creating test run')
+        return redirect(url_for('show_suites'))
+    else:    
+        run = TestRun(request.form['title'])
+        db_session.add(run)
         db_session.commit()
-    flash('New entry was succesfully posted')
-    return redirect(url_for('show_run', run_id=run_id))
+        run_id = run.id
+        for case in cases:
+            e = TestExecution('UNEXECUTED', case, run)
+            db_session.add(e)
+            db_session.commit()
+        flash('New entry was succesfully posted')
+        return redirect(url_for('show_run', run_id=run_id))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

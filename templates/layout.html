@@ -17,7 +17,6 @@
         </div>
         <div id="navbar" class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="#">Home</a></li>
             <li><a href="{{ url_for('show_runs') }}">Test Runs</a></li>
             <li><a href="{{ url_for('show_suites') }}">Test Suites</a></li>
   {% if not session.logged_in %}
@@ -30,10 +29,16 @@
         </div><!--/.nav-collapse -->
       </div>
     </nav>
-</div>
 {% for message in get_flashed_messages() %}
-  <div class="alert alert-info" role="alert">{{ message }}</div>
+<div class="container">
+  <div class="row>
+    <div class="col-md-10">
+      <div class="alert alert-info" role="alert">{{ message }}</div>
+    </div>  
+  </div>
+</div>
 {% endfor %}
+</div>
 {% block body %}
 <!-- Optional theme -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">

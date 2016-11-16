@@ -1,30 +1,52 @@
 {% extends "layout.html" %}
 {% block body %}
-  {% if session.logged_in %}
-    <form action="{{ url_for('add_suite') }}" method=post class=add-entry>
-      <dl>
-        <dt>Test Suite Title:
-        <dd><input type=text size=30 name=title>
-        <dd><input type=submit value="Add Suite">
-      </dl>
-    </form>
-  {% endif %}
-  <ul class=entries>
-  {% for suite in suites %}
-    <li><h2><a href={{url_for('show_cases', ts_id=suite.id)}}>{{ suite.title }}</a></h2></li>
-{% if session.logged_in %}
-<form action="{{ url_for('delete_suite') }}" method=post>
-<input type=hidden value="{{ suite.id }}" name="ts_id"></input>
-<input type=submit value="x"></input>
-</form>
-<form action="{{ url_for('add_run', ts_id=suite.id) }}" method=post>
-<input type=hidden name="title" value="{{ suite.title }}"></input>
-<input type=submit value="add run"></input>
-</form>
-
-{% endif %}
-  {% else %}
-    <li><em>Unbelievable.  No test suites here so far</em>
+<div class="container">
+  <div class="row>
+     <div class="col-md-10">
+       <table class="table">
+         <tr>
+           <th>Test Suite</th>
+           <th>Create Test Run</th>
+           <th>Delete Suite</th>
+         </tr>
+         {% for suite in suites %}
+         <tr>
+          <td><a href={{url_for('show_cases', ts_id=suite.id)}}>{{ suite.title }}</a></td>
+          {% if session.logged_in %}
+          <td>
+            <form action="{{ url_for('add_run', ts_id=suite.id) }}" method=post>
+              <input type=hidden name="title" value="{{ suite.title }}"></input>
+              <button type=submit class="btn btn-primary">Create Run</button>
+            </form>
+          </td>
+          <td>
+            <form action="{{ url_for('delete_suite') }}" method=post>
+              <input type=hidden value="{{ suite.id }}" name="ts_id"></input>
+              <button type=submit class="btn btn-danger">Delete</button>
+            </form>
+          </td>
+         </tr>
+         {% endif %}
+      {% else %}
+      </table>
+    <div class="alert alert-info" role="alert">Unbelievable.  No test suites here so far</div>
   {% endfor %}
-  </ul>
+      </table>
+    </div>
+     {% if session.logged_in %}
+    <br />     
+ <form action="{{ url_for('add_suite') }}" method=post class="form-inline">
+<div class="form-group col-lg-6">
+      <div class="input-group">
+             <input type="text" class="form-control" name="title" placeholder="Title">
+             <span class="input-group-btn">
+               <button type="submit" class="btn btn-secondary">Add new</button>
+             </span> 
+       </div>
+     </div>
+</div>
+
+    {% endif %}
+  </div>
+</div>
 {% endblock %}
