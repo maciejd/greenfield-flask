@@ -8,7 +8,6 @@
            <th>Run name</th>
            <th>Created date</th>
            <th>Summary</th>
-           <th>Delete run</th>
          </tr>
          {% for run in runs %}
          <tr>
@@ -27,20 +26,13 @@
              </div>
            </div>
          </td>
-{% if session.logged_in %}
-<td>
-<form action="{{ url_for('delete_run') }}" method=post>
-<input type=hidden value="{{ run.id }}" name="run_id"></input>
-<button type="submit" class="btn btn-danger">Delete</button>
-</form>
-</td>
-</tr>
-{% endif %}
+       </tr>
   {% else %}
-   Unbelievable.  No test runs here so far
+    </table>
+      <div class="alert alert-info" role="alert"> Unbelievable.  No test runs here so far</div>
   {% endfor %}
-</table>
-</div>
-</div>
+      </table>
+    </div>
+  </div>
 </div>
 {% endblock %}

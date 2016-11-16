@@ -131,8 +131,7 @@ def update_result():
     e = TestExecution.query.filter(TestExecution.id == request.form['ex_id']).first()
     e.status=request.form['status']
     db_session.commit()
-    return redirect(url_for('show_run', run_id=request.form['run_id']))
-  
+    return redirect(url_for('show_run', run_id=request.form['run_id']))  
 
 def get_results(tr_id):
     exs = TestRun.query.filter(TestRun.id == tr_id).first().executions.all()

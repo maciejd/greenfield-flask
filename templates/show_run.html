@@ -1,19 +1,42 @@
 {% extends "layout.html" %}
 {% block body %}
-  <ul class=entries>
-  {% for e in executions %}
-    <li><h2>{{ e.testcase.title }}</h2></li>
-<form name="result" action="{{ url_for('update_result') }}" method="POST">   
- <select name="status" onchange="this.form.submit()">
-  {% for status in statuses %}
-      <option value="{{ status }}" {% if status==e.status %} selected="selected"{% endif %}>{{ status }}</option>
-  {% endfor %}
-</select>
-<input type=hidden name="ex_id" value="{{ e.id }}"></input>
-<input type=hidden name="run_id" value="{{ run_id }}"></input>
-</form>
+<div class="container">
+  <div class"="row">
+    <div class="col-md-10">
+      <table class="table">
+         <tr>
+           <th>Test case</th>
+           <th>Executed on</th>
+           <th>Result</th>
+         </tr>
+         {% for e in executions %}
+         <tr>
+           <td>{{ e.testcase.title }}</td>
+           <td>{{ e.updated }}</td>
+           <td>
+             <form name="result" action="{{ url_for('update_result') }}" method="POST">   
+               <select name="status" onchange="this.form.submit()">
+               {% for status in statuses %}
+                 <option value="{{ status }}" {% if status==e.status %} selected="selected"{% endif %}>{{ status }}</option>
+               {% endfor %}
+              </select>
+              <input type=hidden name="ex_id" value="{{ e.id }}"></input>
+              <input type=hidden name="run_id" value="{{ e.testrun.id }}"></input>
+             </form>
+           </td>
+          </tr>
   {% else %}
-    <li><em>Unbelievable.  No test cases in this run</em>
-  {% endfor %}
-  </ul>
+</table>
+      <div class="alert alert-info" role="alert">Unbelievable.  No test cases in this run</div>
+  {% endfor %}  
+</table>
+{% if session.logged_in %}
+<form action="{{ url_for('delete_run') }}" method=post>
+  <input type=hidden value="{{ executions[0].testrun.id }}" name="run_id"></input>
+  <button type="submit" class="btn btn-danger">Delete run</button>
+</form>
+{% endif %}
+</div>
+</div>
+</div>
 {% endblock %}
