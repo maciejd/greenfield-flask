@@ -1,17 +1,14 @@
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
+from sqlalchemy.orm import relationship, backref
 from datetime import datetime
+from database import Base
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
-db = SQLAlchemy(app)
-
-class TestCase(db.Model):
+class TestCase(Base):
     __tablename__ = 'test_cases'
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String)
-    ts_id = db.Column(db.Integer, db.ForeignKey('test_suites.id'))
-    suite = db.relationship('TestSuite', backref=db.backref('cases', lazy='dynamic'))    
+    id = Column(Integer, primary_key=True)
+    title = Column(String)
+    ts_id = Column(Integer, ForeignKey('test_suites.id'))
+    suite = relationship('TestSuite', backref=backref('cases', lazy='dynamic'))    
 
     def __init__(self, title, suite):
         self.title = title
@@ -20,10 +17,10 @@ class TestCase(db.Model):
     def __repr__(self):
         return '<Test case %r>' % self.title
 
-class TestSuite(db.Model):
+class TestSuite(Base):
     __tablename__ = 'test_suites'
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String)
+    id = Column(Integer, primary_key=True)
+    title = Column(String)
 
     def __init__(self, title):
         self.title = title
@@ -32,11 +29,11 @@ class TestSuite(db.Model):
         return '<Test suite %r>' % self.title
 
    
-class TestRun(db.Model):
+class TestRun(Base):
     __tablename__='test_runs'
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String)
-    created = db.Column(db.DateTime, default=datetime.utcnow())   
+    id = Column(Integer, primary_key=True)
+    title = Column(String)
+    created = Column(DateTime, default=datetime.utcnow())   
 
     def __init__(self, title):
         self.title = title
@@ -44,15 +41,15 @@ class TestRun(db.Model):
     def __repr__(self):
         return '<Test run %r>' % self.title
 
-class TestExecution(db.Model):
+class TestExecution(Base):
     __tablename__='test_executions'
-    id = db.Column(db.Integer, primary_key=True)
-    tc_id = db.Column(db.Integer, db.ForeignKey('test_cases.id'))
-    tr_id = db.Column(db.Integer, db.ForeignKey('test_runs.id'))  
-    testrun = db.relationship('TestRun', backref=db.backref('executions', lazy='dynamic'))
-    testcase = db.relationship('TestCase', backref=db.backref('executions', lazy='dynamic'))  
-    status = db.Column(db.String)
-    updated = db.Column(db.DateTime, default=datetime.utcnow())
+    id = Column(Integer, primary_key=True)
+    tc_id = Column(Integer, ForeignKey('test_cases.id'))
+    tr_id = Column(Integer, ForeignKey('test_runs.id'))  
+    testrun = relationship('TestRun', backref=backref('executions', lazy='dynamic'))
+    testcase = relationship('TestCase', backref=backref('executions', lazy='dynamic'))  
+    status = Column(String)
+    updated = Column(DateTime, default=datetime.utcnow())
 
     def __init__(self, status, testcase, testrun):
         self.status = status

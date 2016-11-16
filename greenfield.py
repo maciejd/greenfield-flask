@@ -2,82 +2,49 @@ import os
 import sqlite3
 from flask import Flask, request, session, g, redirect, url_for, abort, \
 render_template, flash
+from database import db_session, engine
+from models import TestSuite,TestCase,TestRun,TestExecution
 
 app = Flask(__name__)
 app.config.from_object(__name__)
-
 app.config.update(dict(
-    DATABASE=os.path.join(app.root_path, 'greenfield.db'),
-    SECRET_KEY='development_key',
-    USERNAME='admin',
-    PASSWORD='default'
+    SECRET_KEY='development_key'
 ))
 app.config.from_envvar('FLASKR_SETTINGS', silent=True)
 
-def connect_db():
-    rv=sqlite3.connect(app.config['DATABASE'])
-    rv.row_factory = sqlite3.Row
-    return rv
-
-def get_db():
-    if not hasattr(g, 'sqlite_db'):
-        g.sqlite_db = connect_db()
-    return g.sqlite_db
-
 @app.teardown_appcontext
-def close_db(error):
-    if hasattr(g, 'sqlite_db'):
-        g.sqlite_db.close()
-
-def init_db():
-    db = get_db()
-    with app.open_resource('schema.sql', mode='r') as f:
-        db.cursor().executescript(f.read())
-    db.commit()
-
-@app.cli.command('initdb')
-def initb_command():
-    init_db()
-    print 'Initialized the database.'
+def shutdown_session(exception=None):
+    db_session.remove()
 
 @app.route('/suites')
 def show_suites():
-    db = get_db()
-    cur = db.execute('select id, title from test_suites order by id desc')
-    suites = cur.fetchall()
+    suites = TestSuite.query.all()
     return render_template('show_suites.html', suites=suites)
 
 @app.route('/')
 def show_runs():
-    db = get_db()
-    cur = db.execute('select id, title, created from test_runs order by id desc')
-    runs = cur.fetchall()
+    runs = TestRun.query.all()
     return render_template('show_runs.html', runs=runs, get_results=get_results)
 
 @app.route('/suite/<int:ts_id>')
 def show_cases(ts_id):
-    db = get_db()
-    cur = db.execute('select id, title from test_cases where ts_id = ?', [ts_id])
-    cases = cur.fetchall()
+    cases = TestSuite.query.filter(TestSuite.id == ts_id).first().cases.all()
     return render_template('show_cases.html', cases=cases, ts_id=ts_id)
 
 @app.route('/run/<int:run_id>')
 def show_run(run_id):
     statuses = ['UNEXECUTED','PASSED','FAILED','BLOCKED']
-    db = get_db()
-    cur = db.execute('select e.id, c.title, e.status, e.updated from test_cases c join test_executions e on c.id = e.tc_id where e.tr_id = ?', [run_id])
-    executions = cur.fetchall()
+    executions = TestRun.query.filter(TestRun.id == run_id).first().executions.all()
     return render_template('show_run.html', run_id=run_id, executions=executions, statuses=statuses)
 
 @app.route('/add', methods=['POST'])
 def add_suite():
     if not session.get('logged_in'):
         abort(401)
-    db = get_db()
-    cur = db.execute('insert into test_suites (title) values (?)', 
-    [request.form['title']])
-    db.commit()
-    ts_id = cur.lastrowid
+    ts = TestSuite(request.form['title'])
+    db_session.add(ts)
+    db_session.commit()
+    ts_id = ts.id
     flash('New entry was succesfully posted')
     return redirect(url_for('show_cases', ts_id=ts_id))
 
@@ -85,10 +52,9 @@ def add_suite():
 def add_case():
     if not session.get('logged_in'):
         abort(401)
-    db = get_db()
-    db.execute('insert into test_cases (title,ts_id) values (?,?)', 
-    [request.form['title'], request.form['ts_id']])
-    db.commit()
+    tc = TestCase(request.form['title'], TestSuite.query.filter(TestSuite.id == request.form['ts_id']).first())
+    db_session.add(tc)
+    db_session.commit()
     flash('New entry was succesfully posted')
     return redirect(url_for('show_cases', ts_id=request.form['ts_id']))
 
@@ -96,16 +62,15 @@ def add_case():
 def add_run(ts_id):
     if not session.get('logged_in'):
         abort(401)
-    db = get_db()
-    cur = db.execute('insert into test_runs (title) values (?)', [request.form['title']])
-    db.commit()
-    run_id = cur.lastrowid
-    cur = db.execute('select id from test_cases where ts_id = ?', [ts_id])
-    case_ids = cur.fetchall()
-    for tc_id in case_ids:
-        db.execute('insert into test_executions (tc_id,tr_id,status) values (?,?,?)', 
-    [tc_id[0], run_id, 'UNEXECUTED'])
-    db.commit()
+    run = TestRun(request.form['title'])
+    db_session.add(run)
+    db_session.commit()
+    run_id = run.id
+    cases = TestSuite.query.filter(TestSuite.id == ts_id).first().cases.all()
+    for case in cases:
+        e = TestExecution('UNEXECUTED', case, run)
+        db_session.add(e)
+        db_session.commit()
     flash('New entry was succesfully posted')
     return redirect(url_for('show_run', run_id=run_id))
 
@@ -133,9 +98,9 @@ def logout():
 def delete_suite():
     if not session.get('logged_in'):
         abort(401)
-    db = get_db()
-    db.execute('delete from test_suites where id = ?', [request.form['ts_id']])
-    db.commit()
+    s = TestSuite.query.filter(TestSuite.id == request.form['ts_id']).first()
+    db_session.delete(s)
+    db_session.commit()
     flash('Test suite deleted')
     return redirect(url_for('show_suites'))
 
@@ -143,9 +108,9 @@ def delete_suite():
 def delete_case():
     if not session.get('logged_in'):
         abort(401)
-    db = get_db()
-    db.execute('delete from test_cases where id = ?', [request.form['tc_id']])
-    db.commit()
+    c = TestCase.query.filter(TestCase.id == request.form['tc_id']).first()
+    db_session.delete(c)
+    db_session.commit()
     flash('Test case deleted')
     return redirect(url_for('show_cases', ts_id=request.form['ts_id']))
 
@@ -153,9 +118,9 @@ def delete_case():
 def delete_run():
     if not session.get('logged_in'):
         abort(401)
-    db = get_db()
-    db.execute('delete from test_runs where id = ?', [request.form['run_id']])
-    db.commit()
+    r = TestRun.query.filter(TestRun.id == request.form['run_id']).first()
+    db_session.delete(r)
+    db_session.commit()
     flash('Test run deleted')
     return redirect(url_for('show_runs'))
 
@@ -163,15 +128,15 @@ def delete_run():
 def update_result():
     if not session.get('logged_in'):
         abort(401)
-    db = get_db()
-    db.execute('update test_executions set status = ? where id = ?', [request.form['status'], request.form['ex_id']])
-    db.commit()
+    e = TestExecution.query.filter(TestExecution.id == request.form['ex_id']).first()
+    e.status=request.form['status']
+    db_session.commit()
     return redirect(url_for('show_run', run_id=request.form['run_id']))
   
 
 def get_results(tr_id):
-    db = get_db()
-    cur = db.execute('select status, count(*) as result_count from test_executions where tr_id = ? group by status', [tr_id])
+    exs = TestRun.query.filter(TestRun.id == tr_id).first().executions.all()
+    cur = engine.execute('select status, count(*) as result_count from test_executions where tr_id = ? group by status', [tr_id])
     results = cur.fetchall()
     total = 0
     for result in results:
