@@ -40,14 +40,14 @@ def initb_command():
     init_db()
     print 'Initialized the database.'
 
-@app.route('/')
+@app.route('/suites')
 def show_suites():
     db = get_db()
     cur = db.execute('select id, title from test_suites order by id desc')
     suites = cur.fetchall()
     return render_template('show_suites.html', suites=suites)
 
-@app.route('/runs')
+@app.route('/')
 def show_runs():
     db = get_db()
     cur = db.execute('select id, title, created from test_runs order by id desc')
@@ -63,10 +63,11 @@ def show_cases(ts_id):
 
 @app.route('/run/<int:run_id>')
 def show_run(run_id):
+    statuses = ['UNEXECUTED','PASSED','FAILED','BLOCKED']
     db = get_db()
     cur = db.execute('select e.id, c.title, e.status, e.updated from test_cases c join test_executions e on c.id = e.tc_id where e.tr_id = ?', [run_id])
     executions = cur.fetchall()
-    return render_template('show_run.html', executions=executions)
+    return render_template('show_run.html', run_id=run_id, executions=executions, statuses=statuses)
 
 @app.route('/add', methods=['POST'])
 def add_suite():
@@ -97,15 +98,15 @@ def add_run(ts_id):
     db = get_db()
     cur = db.execute('insert into test_runs (title) values (?)', [request.form['title']])
     db.commit()
-    tr_id = cur.lastrowid
+    run_id = cur.lastrowid
     cur = db.execute('select id from test_cases where ts_id = ?', [ts_id])
     case_ids = cur.fetchall()
     for tc_id in case_ids:
         db.execute('insert into test_executions (tc_id,tr_id,status) values (?,?,?)', 
-    [tc_id[0], tr_id, 'UNEXECUTED'])
+    [tc_id[0], run_id, 'UNEXECUTED'])
     db.commit()
     flash('New entry was succesfully posted')
-    return redirect(url_for('show_runs'))
+    return redirect(url_for('show_run', run_id=run_id))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -156,3 +157,13 @@ def delete_run():
     db.commit()
     flash('Test run deleted')
     return redirect(url_for('show_runs'))
+
+@app.route('/update_result', methods=['POST'])
+def update_result():
+    if not session.get('logged_in'):
+        abort(401)
+    db = get_db()
+    db.execute('update test_executions set status = ? where id = ?', [request.form['status'], request.form['ex_id']])
+    db.commit()
+    return redirect(url_for('show_run', run_id=request.form['run_id']))
+  

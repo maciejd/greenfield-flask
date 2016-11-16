@@ -4,6 +4,8 @@
 <div class=page>
   <h1>Greenfield</h1>
   <div class=metanav>
+    <a href="{{ url_for('show_runs') }}">Test Runs</a>
+    <a href="{{ url_for('show_suites') }}">Test Suites</a>
   {% if not session.logged_in %}
     <a href="{{ url_for('login') }}">log in</a>
   {% else %}
