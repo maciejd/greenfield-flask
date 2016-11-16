@@ -49,7 +49,7 @@ class TestExecution(Base):
     testrun = relationship('TestRun', backref=backref('executions', lazy='dynamic'))
     testcase = relationship('TestCase', backref=backref('executions', lazy='dynamic'))  
     status = Column(String)
-    updated = Column(DateTime, default=datetime.utcnow())
+    updated = Column(DateTime, default=datetime.utcnow(), onupdate=datetime.utcnow())
 
     def __init__(self, status, testcase, testrun):
         self.status = status
