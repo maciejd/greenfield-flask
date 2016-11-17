@@ -28,14 +28,16 @@ def show_runs():
 
 @app.route('/suite/<int:ts_id>')
 def show_cases(ts_id):
-    cases = TestSuite.query.filter(TestSuite.id == ts_id).first().cases.all()
-    return render_template('show_cases.html', cases=cases, ts_id=ts_id)
+    suite = TestSuite.query.filter(TestSuite.id == ts_id).first()
+    cases = suite.cases.all()
+    return render_template('show_cases.html', cases=cases, suite=suite)
 
 @app.route('/run/<int:run_id>')
 def show_run(run_id):
     statuses = ['UNEXECUTED','PASSED','FAILED','BLOCKED']
-    executions = TestRun.query.filter(TestRun.id == run_id).first().executions.all()
-    return render_template('show_run.html', run_id=run_id, executions=executions, statuses=statuses)
+    run = TestRun.query.filter(TestRun.id == run_id).first()
+    executions = run.executions.all()
+    return render_template('show_run.html', run=run, executions=executions, statuses=statuses)
 
 @app.route('/add', methods=['POST'])
 def add_suite():

@@ -3,6 +3,11 @@
 <div class="container-fluid">
   <div class="row">
     <div class="col-lg-8 col-lg-offset-2">
+      <h3>{{ run.title }}</h3>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-lg-8 col-lg-offset-2">
       <table class="table">
          <tr>
            <th>Test case</th>
@@ -22,7 +27,7 @@
                {% endfor %}
               </select>
               <input type=hidden name="ex_id" value="{{ e.id }}"></input>
-              <input type=hidden name="run_id" value="{{ e.testrun.id }}"></input>
+              <input type=hidden name="run_id" value="{{ run.id }}"></input>
              </form>
 	  {% else %}
 	     {{ e.status }}

@@ -3,9 +3,14 @@
 <div class="container-fluid">
   <div class="row">
      <div class="col-lg-8 col-lg-offset-2">
+       <h3>{{ suite.title }}</h3>
+    </div>
+  </div>
+  <div class="row">
+     <div class="col-lg-8 col-lg-offset-2">
        <table class="table">
          <tr>
-           <th>Test Case</th>
+           <th>Test Case Title</th>
            {% if session.logged_in %}
            <th>Delete</th>
 		   {% endif %}
@@ -39,7 +44,7 @@
              <span class="input-group-btn">
                <button type="submit" class="btn btn-secondary">Add</button>
              </span>
-             <input type=hidden value="{{ ts_id }}" name="ts_id"></input> 
+             <input type=hidden value="{{ suite.id }}" name="ts_id"></input> 
        </div>
      </div>
 </div>
