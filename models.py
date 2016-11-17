@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
 from sqlalchemy.orm import relationship, backref
-from datetime import datetime
+import datetime
 from database import Base
 
 class TestCase(Base):
@@ -33,7 +33,7 @@ class TestRun(Base):
     __tablename__='test_runs'
     id = Column(Integer, primary_key=True)
     title = Column(String)
-    created = Column(DateTime, default=datetime.utcnow())   
+    created = Column(DateTime, default=datetime.datetime.utcnow)   
 
     def __init__(self, title):
         self.title = title
@@ -49,7 +49,7 @@ class TestExecution(Base):
     testrun = relationship('TestRun', backref=backref('executions', lazy='dynamic'))
     testcase = relationship('TestCase', backref=backref('executions', lazy='dynamic'))  
     status = Column(String)
-    updated = Column(DateTime, default=datetime.utcnow(), onupdate=datetime.utcnow())
+    updated = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
 
     def __init__(self, status, testcase, testrun):
         self.status = status
