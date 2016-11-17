@@ -21,7 +21,7 @@
            <td>
            {% if session.logged_in %}
              <form name="result" action="{{ url_for('update_result') }}" method="POST">   
-               <select name="status" onchange="this.form.submit()">
+               <select class="form-control" name="status" onchange="this.form.submit()">
                {% for status in statuses %}
                  <option value="{{ status }}" {% if status==e.status %} selected="selected"{% endif %}>{{ status }}</option>
                {% endfor %}
