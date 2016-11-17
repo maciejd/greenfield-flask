@@ -60,7 +60,8 @@
 {% if session.logged_in and (suites|length > 0) %}
 <div class="row">
   <form action="{{ url_for('add_run') }}" method=post>
-      <div class="add-run input-group col-lg-6 col-lg-offset-2 col-xs-10">
+    <div class="col-lg-6 col-lg-offset-2">      
+<div class="add-run input-group">
                <select class="form-control" name="ts_id">
                {% for suite in suites %}
                  <option value="{{ suite.id }}"}>{{ suite.title }}</option>
@@ -71,6 +72,7 @@
                <button type="submit" class="btn btn-secondary">Create new</button>
              </span>
        </div>
+</div>
 </form>
 </div>
     {% endif %}

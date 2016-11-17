@@ -6,6 +6,7 @@
        <h3>{{ suite.title }}</h3>
     </div>
   </div>
+{% if cases|length > 0 %}
   <div class="row">
      <div class="col-lg-8 col-lg-offset-2">
        <table class="table">
@@ -28,21 +29,26 @@
           </td>
          {% endif %}
          </tr>
-      {% else %}
-</tr>
-      </table>
-</div>
-</div>
-    <div class="alert alert-info" role="alert">Unbelievable.  No test cases here so far</div>
   {% endfor %}
       </table>
     </div>
 </div>
+
+      {% else %}
+
+  <div class="row">
+     <div class="col-lg-8 col-lg-offset-2">
+    <div class="alert alert-info" role="alert">Unbelievable.  No test cases here so far</div>
+</div>
+</div>
+
+{% endif %}
+
      {% if session.logged_in %}
 <div class="row">     
 <div class="col-lg-6 col-lg-offset-2">
- <form action="{{ url_for('add_case') }}"  method=post class="form-inline">
-      <div class="input-group col-xs-10">
+ <form action="{{ url_for('add_case') }}"  method=post>
+      <div class="input-group">
              <input type="text" class="form-control" name="title" placeholder="Test case title">
              <span class="input-group-btn">
                <button type="submit" class="btn btn-secondary">Add</button>
@@ -53,5 +59,4 @@
 </div>
 </div>
     {% endif %}
-  </div>
 {% endblock %}
