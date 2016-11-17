@@ -14,6 +14,7 @@
            <td>{{ e.testcase.title }}</td>
            <td>{{ e.updated }}</td>
            <td>
+           {% if session.logged_in %}
              <form name="result" action="{{ url_for('update_result') }}" method="POST">   
                <select name="status" onchange="this.form.submit()">
                {% for status in statuses %}
@@ -23,6 +24,9 @@
               <input type=hidden name="ex_id" value="{{ e.id }}"></input>
               <input type=hidden name="run_id" value="{{ e.testrun.id }}"></input>
              </form>
+	  {% else %}
+	     {{ e.status }}
+          {% endif %}
            </td>
           </tr>
   {% else %}
