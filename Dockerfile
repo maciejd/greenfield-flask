@@ -7,7 +7,8 @@ RUN pip install --upgrade pip
 RUN pip install --upgrade virtualenv
 
 RUN mkdir deployment
-RUN git clone https://github.com/maciejd/greenfield-flask.git /deployment/
+COPY . /deployment/
+RUN ls -la /deployment/*
 RUN virtualenv /deployment/env/
 RUN /deployment/env/bin/pip install Flask
 RUN /deployment/env/bin/pip install Flask-SQLAlchemy
