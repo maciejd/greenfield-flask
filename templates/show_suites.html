@@ -1,27 +1,27 @@
 {% extends "layout.html" %}
 {% block body %}
-<div class="container">
-  <div class="row>
-     <div class="col-md-10">
+<div class="container-fluid">
+  <div class="row">
+     <div class="col-lg-8 col-lg-offset-2">
        <table class="table">
          <tr>
            <th>Test Suite</th>
            {% if session.logged_in %}
-           <th class="col-md-2">Create Test Run</th>
-           <th class="col-md-2">Delete Suite</th>
+           <th>Create Test Run</th>
+           <th>Delete Suite</th>
            {% endif %}
          </tr>
          {% for suite in suites %}
          <tr>
           <td><a href={{url_for('show_cases', ts_id=suite.id)}}>{{ suite.title }}</a></td>
           {% if session.logged_in %}
-          <td class="cold-md-2">
+          <td>
             <form action="{{ url_for('add_run', ts_id=suite.id) }}" method=post>
               <input type=hidden name="title" value="{{ suite.title }}"></input>
               <button type=submit class="btn btn-primary">Create Run</button>
             </form>
           </td>
-          <td class="col-md-2">
+          <td>
             <form action="{{ url_for('delete_suite') }}" method=post>
               <input type=hidden value="{{ suite.id }}" name="ts_id"></input>
               <button type=submit class="btn btn-danger">Delete</button>
@@ -34,11 +34,12 @@
     <div class="alert alert-info" role="alert">Unbelievable.  No test suites here so far</div>
   {% endfor %}
       </table>
-    </div>
      {% if session.logged_in %}
-    <br />     
+ </div>
+</div>     
+<div class="row">
  <form action="{{ url_for('add_suite') }}" method=post class="form-inline">
-<div class="form-group col-lg-6">
+<div class="form-group col-lg-8 col-lg-offset-2">
       <div class="input-group">
              <input type="text" class="form-control" name="title" placeholder="Test suite title">
              <span class="input-group-btn">
@@ -46,9 +47,8 @@
              </span> 
        </div>
      </div>
+</form>
 </div>
-
     {% endif %}
   </div>
-</div>
 {% endblock %}

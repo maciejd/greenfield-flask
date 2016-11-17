@@ -1,13 +1,13 @@
 {% extends "layout.html" %}
 {% block body %}
-<div class="container">
-  <div class"="row">
-    <div class="col-md-10">
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-lg-offset-2 col-lg-8">
       <table class="table">
          <tr>
            <th>Run name</th>
            <th>Created date</th>
-           <th>Summary</th>
+           <th class="col-xs-6 col-sm-6">Summary</th>
 	   {% if session.logged_in %}
 	   <th>Delete run</th>
   	   {% endif %}
@@ -16,7 +16,7 @@
          <tr>
           <td><a href={{url_for('show_run', run_id=run.id)}}>{{ run.title }}</a></td>
           <td>{{ run.created }}</td>
-          <td class="col-md-4">
+          <td>
      	    <div class="progress">
              <div class="progress-bar progress-bar-success" style="width:{{ get_results(run.id)['PASSED'] }}%">
                <span class="sr-only"></span>
@@ -37,14 +37,18 @@
 </form>
 </td>
 {% endif %}
-
-  {% else %}
 </tr>
+</table>
+  {% else %}
+      </tr>
     </table>
+  </div>
+</div>
+  <div class="row">
+    <div class="col-lg-8 col-lg-offset-2">
       <div class="alert alert-info" role="alert"> Unbelievable.  No test runs here so far</div>
-  {% endfor %}
-      </table>
     </div>
   </div>
+  {% endfor %}
 </div>
 {% endblock %}
