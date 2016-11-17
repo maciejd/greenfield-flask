@@ -24,7 +24,8 @@ def show_suites():
 @app.route('/')
 def show_runs():
     runs = TestRun.query.all()
-    return render_template('show_runs.html', runs=runs, get_results=get_results)
+    suites = TestSuite.query.all()
+    return render_template('show_runs.html', runs=runs, get_results=get_results, suites=suites)
 
 @app.route('/suite/<int:ts_id>')
 def show_cases(ts_id):
@@ -60,14 +61,15 @@ def add_case():
     flash('New entry was succesfully posted')
     return redirect(url_for('show_cases', ts_id=request.form['ts_id']))
 
-@app.route('/add_run/<int:ts_id>', methods=['POST'])
-def add_run(ts_id):
+@app.route('/add_run', methods=['POST'])
+def add_run():
     if not session.get('logged_in'):
         abort(401)
+    ts_id = request.form['ts_id']
     cases = TestSuite.query.filter(TestSuite.id == ts_id).first().cases.all()
     if len(cases) == 0:
         flash('Add test case before creating test run')
-        return redirect(url_for('show_suites'))
+        return redirect(url_for('show_cases', ts_id=ts_id))
     else:    
         run = TestRun(request.form['title'])
         db_session.add(run)

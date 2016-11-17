@@ -6,6 +6,7 @@
       <h3>Test Runs</h3>
     </div>
   </div>
+{% if runs|length > 0 %}
   <div class="row">
     <div class="col-lg-offset-2 col-lg-8">
       <table class="table">
@@ -34,26 +35,45 @@
              </div>
            </div>
          </td>
-{% if session.logged_in %}
+	{% if session.logged_in %}
 <td>
 <form action="{{ url_for('delete_run') }}" method=post>
   <input type=hidden value="{{ run.id }}" name="run_id"></input>
   <button type="submit" class="btn btn-danger">Delete run</button>
 </form>
 </td>
-{% endif %}
 </tr>
-</table>
-  {% else %}
-      </tr>
+	{% else %}
+</tr>
+	{% endif %}
+{% endfor %}
     </table>
   </div>
 </div>
+{% else %}
   <div class="row">
     <div class="col-lg-8 col-lg-offset-2">
       <div class="alert alert-info" role="alert"> Unbelievable.  No test runs here so far</div>
     </div>
-  </div>
-  {% endfor %}
+</div>
+{% endif %}
+{% if session.logged_in and (suites|length > 0) %}
+<div class="row">
+  <form action="{{ url_for('add_run') }}" method=post>
+      <div class="add-run input-group col-lg-6 col-lg-offset-2 col-xs-10">
+               <select class="form-control" name="ts_id">
+               {% for suite in suites %}
+                 <option value="{{ suite.id }}"}>{{ suite.title }}</option>
+               {% endfor %}
+              </select>
+             <input type="text" class="form-control" name="title" placeholder="Test run title" required>
+             <span class="input-group-btn">
+               <button type="submit" class="btn btn-secondary">Create new</button>
+             </span>
+       </div>
+</form>
+</div>
+    {% endif %}
+
 </div>
 {% endblock %}

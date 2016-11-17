@@ -12,7 +12,6 @@
          <tr>
            <th>Test Suite</th>
            {% if session.logged_in %}
-           <th>Create Test Run</th>
            <th>Delete Suite</th>
            {% endif %}
          </tr>
@@ -20,12 +19,6 @@
          <tr>
           <td><a href={{url_for('show_cases', ts_id=suite.id)}}>{{ suite.title }}</a></td>
           {% if session.logged_in %}
-          <td>
-            <form action="{{ url_for('add_run', ts_id=suite.id) }}" method=post>
-              <input type=hidden name="title" value="{{ suite.title }}"></input>
-              <button type=submit class="btn btn-primary">Create Run</button>
-            </form>
-          </td>
           <td>
             <form action="{{ url_for('delete_suite') }}" method=post>
               <input type=hidden value="{{ suite.id }}" name="ts_id"></input>
@@ -43,10 +36,10 @@
  </div>
 </div>     
 <div class="row">
- <form action="{{ url_for('add_suite') }}" method=post class="form-inline">
-<div class="form-group col-lg-8 col-lg-offset-2">
+ <form action="{{ url_for('add_suite') }}" method=post>
+<div class="form-group col-lg-6 col-lg-offset-2">
       <div class="input-group">
-             <input type="text" class="form-control" name="title" placeholder="Test suite title">
+             <input type="text" class="form-control" name="title" placeholder="Test suite title" required>
              <span class="input-group-btn">
                <button type="submit" class="btn btn-secondary">Add new</button>
              </span> 

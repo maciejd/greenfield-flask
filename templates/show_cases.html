@@ -29,7 +29,10 @@
          {% endif %}
          </tr>
       {% else %}
+</tr>
       </table>
+</div>
+</div>
     <div class="alert alert-info" role="alert">Unbelievable.  No test cases here so far</div>
   {% endfor %}
       </table>
@@ -37,16 +40,17 @@
 </div>
      {% if session.logged_in %}
 <div class="row">     
+<div class="col-lg-6 col-lg-offset-2">
  <form action="{{ url_for('add_case') }}"  method=post class="form-inline">
-<div class="form-group col-lg-8 col-lg-offset-2">
-      <div class="input-group">
+      <div class="input-group col-xs-10">
              <input type="text" class="form-control" name="title" placeholder="Test case title">
              <span class="input-group-btn">
                <button type="submit" class="btn btn-secondary">Add</button>
              </span>
              <input type=hidden value="{{ suite.id }}" name="ts_id"></input> 
-       </div>
      </div>
+</form>
+</div>
 </div>
     {% endif %}
   </div>
