@@ -18,7 +18,7 @@
          </tr>
          {% for case in cases %}
          <tr>
-          <td>{{case.title}}</td>
+          <td><a href="{{ url_for('show_executions', case_id=case.id) }}">{{case.title}}</a></td>
           {% if session.logged_in %}
           <td>
             <form action="{{ url_for('delete_case') }}" method=post>

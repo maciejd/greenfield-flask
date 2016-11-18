@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+{% block body %}
+<div class="container-fluid">
+  <div class="row">
+     <div class="col-lg-8 col-lg-offset-2">
+       <h3>Executions for {{ executions[0].testcase.title }}</h3>
+    </div>
+  </div>
+{% if executions|length > 0 %}
+  <div class="row">
+     <div class="col-lg-8 col-lg-offset-2">
+       <table class="table">
+         <tr>
+           <th>Test Run</th>
+           <th>Executed on</th>
+           <th>Status</th>
+         {% for e in executions %}
+         <tr>
+          <td><a href="{{ url_for('show_run', run_id=e.tr_id) }}">{{ e.testrun.title }}</a></td>
+          <td>{{ e.updated }} </td>
+          <td>{{ e.status }} </td>
+         </tr>
+  {% endfor %}
+      </table>
+    </div>
+</div>
+
+      {% else %}
+
+  <div class="row">
+     <div class="col-lg-8 col-lg-offset-2">
+    <div class="alert alert-info" role="alert">Unbelievable. This test case has not been executed yet</div>
+</div>
+</div>
+
+{% endif %}
+{% endblock %}

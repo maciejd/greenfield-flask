@@ -40,6 +40,11 @@ def show_run(run_id):
     executions = run.executions.all()
     return render_template('show_run.html', run=run, executions=executions, statuses=statuses)
 
+@app.route('/executions/<int:case_id>')
+def show_executions(case_id):
+    executions = TestCase.query.filter(TestCase.id == case_id).first().executions.all()
+    return render_template('show_executions.html', executions=executions)
+
 @app.route('/add', methods=['POST'])
 def add_suite():
     if not session.get('logged_in'):
