@@ -160,5 +160,5 @@ def get_results(tr_id):
 
 @app.template_filter('label')
 def get_label(status):
-    map = {'UNEXECUTED':'label-default','PASSED':'label-success','FAILED':'label-danger','BLOCKED':'label-warning'}
+    map = {'UNEXECUTED':'primary','PASSED':'success','FAILED':'danger','BLOCKED':'warning'}
     return map[status]
