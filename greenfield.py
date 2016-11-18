@@ -35,7 +35,7 @@ def show_cases(ts_id):
 
 @app.route('/run/<int:run_id>')
 def show_run(run_id):
-    statuses = ['UNEXECUTED','PASSED','FAILED','BLOCKED']
+    statuses = ['UNEXECUTED', 'PASSED', 'FAILED', 'BLOCKED']
     run = TestRun.query.filter(TestRun.id == run_id).first()
     executions = run.executions.all()
     return render_template('show_run.html', run=run, executions=executions, statuses=statuses)
@@ -157,3 +157,8 @@ def get_results(tr_id):
     for result in results:
         d[result['status']]=round(result['result_count']/float(total)*100, 0)
     return d
+
+@app.template_filter('label')
+def get_label(status):
+    map = {'UNEXECUTED':'label-default','PASSED':'label-success','FAILED':'label-danger','BLOCKED':'label-warning'}
+    return map[status]
