@@ -15,7 +15,7 @@
            <th>Created date</th>
            <th class="col-xs-6 col-sm-6">Summary</th>
 	   {% if session.logged_in %}
-	   <th>Delete run</th>
+	   <th class="text-right">Delete run</th>
   	   {% endif %}
          </tr>
          {% for run in runs %}
@@ -39,7 +39,7 @@
 <td>
 <form action="{{ url_for('delete_run') }}" method=post>
   <input type=hidden value="{{ run.id }}" name="run_id"></input>
-  <button type="submit" class="btn btn-danger">Delete run</button>
+  <button type="submit" class="btn btn-danger pull-right">Delete run</button>
 </form>
 </td>
 </tr>
