@@ -8,7 +8,7 @@ class TestCase(Base):
     id = Column(Integer, primary_key=True)
     title = Column(String)
     ts_id = Column(Integer, ForeignKey('test_suites.id'))
-    suite = relationship('TestSuite', backref=backref('cases', lazy='dynamic'))    
+    suite = relationship('TestSuite', backref=backref('cases', lazy='dynamic', cascade="all, delete-orphan"))    
 
     def __init__(self, title, suite):
         self.title = title
@@ -46,7 +46,7 @@ class TestExecution(Base):
     id = Column(Integer, primary_key=True)
     tc_id = Column(Integer, ForeignKey('test_cases.id'))
     tr_id = Column(Integer, ForeignKey('test_runs.id'))  
-    testrun = relationship('TestRun', backref=backref('executions', lazy='dynamic'))
+    testrun = relationship('TestRun', backref=backref('executions', lazy='dynamic', cascade="all, delete-orphan"))
     testcase = relationship('TestCase', backref=backref('executions', lazy='dynamic'))  
     status = Column(String)
     updated = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)

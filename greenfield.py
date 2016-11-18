@@ -42,8 +42,9 @@ def show_run(run_id):
 
 @app.route('/executions/<int:case_id>')
 def show_executions(case_id):
-    executions = TestCase.query.filter(TestCase.id == case_id).first().executions.all()
-    return render_template('show_executions.html', executions=executions)
+    case = TestCase.query.filter(TestCase.id == case_id).first()
+    executions = case.executions.all()
+    return render_template('show_executions.html', case=case, executions=executions)
 
 @app.route('/add', methods=['POST'])
 def add_suite():
@@ -111,7 +112,7 @@ def logout():
 def delete_suite():
     if not session.get('logged_in'):
         abort(401)
-    s = TestSuite.query.filter(TestSuite.id == request.form['ts_id']).first()
+    s = TestSuite.query.filter(TestSuite.id == request.form['ts_id']).first()            
     db_session.delete(s)
     db_session.commit()
     flash('Test suite deleted')
